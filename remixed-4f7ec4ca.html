@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학습자기주도 교과목 매트릭스 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f7f6f3;
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .export-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .export-btn {
+            padding: 8px 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .export-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .import-btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .import-btn:hover {
+            background: #0056b3;
+            transform: translateY(-1px);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .matrix-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            min-width: 1200px;
+        }
+
+        .matrix-table th,
+        .matrix-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            position: relative;
+        }
+
+        .matrix-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #495057;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .matrix-table .subject-header {
+            background: #e9ecef;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+
+        .matrix-table .subject-name {
+            background: #f8f9fa;
+            text-align: left;
+            padding: 10px;
+            font-weight: 500;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+        }
+
+        .matrix-table .subject-code {
+            color: #666;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+
+        .competency-cell {
+            width: 60px;
+            height: 40px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .competency-cell:hover {
+            background: #f0f8ff;
+        }
+
+        .competency-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 auto;
+            opacity: 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .competency-dot.active {
+            opacity: 1;
+        }
+
+        .competency-dot.partial {
+            background: #ffd43b;
+        }
+
+        .competency-dot.strong {
+            background: #51cf66;
+        }
+
+        .competency-dot:hover {
+            transform: scale(1.2);
+        }
+
+        .edit-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .edit-modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .competency-level {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .level-btn {
+            padding: 8px 16px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .level-btn:hover {
+            border-color: #667eea;
+        }
+
+        .level-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .level-btn.partial {
+            background: #ffd43b;
+            border-color: #ffd43b;
+            color: #333;
+        }
+
+        .level-btn.strong {
+            background: #51cf66;
+            border-color: #51cf66;
+            color: white;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .highlight {
+            background: #fff3cd !important;
+            animation: highlight 2s ease-out;
+        }
+
+        @keyframes highlight {
+            0% { background: #fff3cd !important; }
+            100% { background: transparent !important; }
+        }
+
+        .competency-header {
+            writing-mode: vertical-lr;
+            text-orientation: mixed;
+            min-height: 120px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            .filter-group {
+                justify-content: center;
+            }
+            
+            .stats {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>학습자기주도 교과목 매트릭스</h1>
+            <p>2025년도 교육과정 역량 분석 및 매핑</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="과목명, 과목코드로 검색...">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all">전체</button>
+                <button class="filter-btn" data-filter="required">필수</button>
+                <button class="filter-btn" data-filter="elective">선택</button>
+                <button class="filter-btn" data-filter="practical">실무</button>
+            </div>
+            <div class="export-group">
+                <button class="export-btn" onclick="exportJSON()">
+                    💾 JSON 내보내기
+                </button>
+                <button class="export-btn" onclick="exportCSV()">
+                    📊 CSV 내보내기
+                </button>
+                <button class="import-btn" onclick="importData()">
+                    📁 데이터 가져오기
+                </button>
+                <input type="file" id="fileInput" class="file-input" accept=".json,.csv" onchange="handleFileImport(event)">
+            </div>
+        </div>
+
+        <div class="matrix-container">
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalSubjects">0</div>
+                    <div class="stat-label">총 과목 수</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalMappings">0</div>
+                    <div class="stat-label">역량 매핑 수</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="avgMappings">0</div>
+                    <div class="stat-label">평균 매핑/과목</div>
+                </div>
+            </div>
+
+            <table class="matrix-table" id="matrixTable">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 250px;">교과목명</th>
+                        <th rowspan="2" style="width: 80px;">수업형태</th>
+                        <th rowspan="2" style="width: 80px;">과목성격</th>
+                        <th colspan="18">핵심역량</th>
+                    </tr>
+                    <tr>
+                        <th class="competency-header">창의적 사고력</th>
+                        <th class="competency-header">학습자료 활용능력</th>
+                        <th class="competency-header">학습 태도</th>
+                        <th class="competency-header">효과적 의사소통</th>
+                        <th class="competency-header">팀워크</th>
+                        <th class="competency-header">대인관계</th>
+                        <th class="competency-header">인문학적 소양</th>
+                        <th class="competency-header">인간 이해</th>
+                        <th class="competency-header">도전정신</th>
+                        <th class="competency-header">책임감</th>
+                        <th class="competency-header">성찰</th>
+                        <th class="competency-header">문제해결</th>
+                        <th class="competency-header">의사결정</th>
+                        <th class="competency-header">글로벌 감각</th>
+                        <th class="competency-header">온라인 정보 활용</th>
+                        <th class="competency-header">예술적 소양</th>
+                        <th class="competency-header">시민의식</th>
+                        <th class="competency-header">건강한 삶</th>
+                    </tr>
+                </thead>
+                <tbody id="matrixBody">
+                    <!-- 데이터가 여기에 동적으로 추가됩니다 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 편집 모달 -->
+    <div class="edit-modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>교과목 편집</h3>
+                <p id="editSubjectInfo"></p>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>교과목명</label>
+                    <input type="text" id="editSubjectName" placeholder="교과목명 입력">
+                </div>
+                <div class="form-group">
+                    <label>과목코드</label>
+                    <input type="text" id="editSubjectCode" placeholder="과목코드 입력">
+                </div>
+                <div class="form-group">
+                    <label>수업형태</label>
+                    <select id="editClassType">
+                        <option value="이론">이론</option>
+                        <option value="실습">실습</option>
+                        <option value="이론+실습">이론+실습</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>과목성격</label>
+                    <select id="editSubjectType">
+                        <option value="필수">필수</option>
+                        <option value="선택">선택</option>
+                        <option value="실무">실무</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>선택된 역량 수준</label>
+                    <div class="competency-level">
+                        <button class="level-btn" data-level="none">없음</button>
+                        <button class="level-btn partial" data-level="partial">부분적</button>
+                        <button class="level-btn active" data-level="basic">기본</button>
+                        <button class="level-btn strong" data-level="strong">심화</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>메모</label>
+                    <textarea id="editMemo" placeholder="추가 메모사항"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">취소</button>
+                <button class="btn btn-primary" onclick="saveEdit()">저장</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 초기 데이터
+        const subjects = [
+            { id: 1, code: '41601', name: '건축학개론(2)', type: '이론', category: 'required', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 2, code: '41632', name: '공간구성론과구조(3)', type: '이론', category: 'required', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 3, code: '41610', name: '서양건축사와환경(3)', type: '이론', category: 'required', competencies: [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 4, code: '41806', name: '디지털미디어(3)', type: '실습', category: 'elective', competencies: [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 5, code: '41616', name: '한국건축사와기후(3)', type: '이론', category: 'required', competencies: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 6, code: '41615', name: '인문학과건축(3)', type: '이론', category: 'required', competencies: [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 7, code: '41625', name: '대지분석과설계(6)', type: '실습', category: 'required', competencies: [0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 8, code: '41826', name: '디지털미디어II(3)', type: '실습', category: 'elective', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 9, code: '41620', name: '현대건축론(3)', type: '이론', category: 'required', competencies: [1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 10, code: '41872', name: '건축사협업(3)', type: '실습', category: 'elective', competencies: [1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 11, code: '41633', name: '건축경제론(3)', type: '이론', category: 'required', competencies: [1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 12, code: '46075', name: '건축설계와공학(3)', type: '이론+실습', category: 'elective', competencies: [1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 13, code: '41630', name: '건축환경론(3)', type: '이론', category: 'required', competencies: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 14, code: '46042', name: '건축법규와개론(3)', type: '이론', category: 'elective', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 15, code: '41622', name: '주거론(3)', type: '이론', category: 'required', competencies: [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 16, code: '46079', name: '도시계획과설계', type: '이론+실습', category: 'elective', competencies: [0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 17, code: '41621', name: '한국건축론(3)', type: '이론', category: 'required', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 18, code: '41922', name: '건축디자인미디어융합(3)', type: '실습', category: 'elective', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1] },
+            { id: 19, code: '46080', name: '도시환경과정책설계(3)', type: '이론+실습', category: 'elective', competencies: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 20, code: '41625', name: '융합건축설계(3)', type: '실습', category: 'elective', competencies: [1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] },
+            { id: 21, code: '41627', name: '현대건축론II(3)', type: '이론', category: 'required', competencies: [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1] }
+        ];
+
+        const competencyNames = [
+            '창의적 사고력', '학습자료 활용능력', '학습 태도', '효과적 의사소통', '팀워크', 
+            '대인관계', '인문학적 소양', '인간 이해', '도전정신', '책임감', '성찰', 
+            '문제해결', '의사결정', '글로벌 감각', '온라인 정보 활용', '예술적 소양', 
+            '시민의식', '건강한 삶'
+        ];
+
+        let currentEditingSubject = null;
+        let currentEditingCompetency = null;
+        let filteredSubjects = [...subjects];
+
+        // 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            renderMatrix();
+            updateStats();
+            attachEventListeners();
+        });
+
+        function renderMatrix() {
+            const tbody = document.getElementById('matrixBody');
+            tbody.innerHTML = '';
+
+            filteredSubjects.forEach(subject => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="subject-name">
+                        <span class="subject-code">${subject.code}</span>
+                        <span onclick="editSubject(${subject.id})" style="cursor: pointer; color: #667eea;">${subject.name}</span>
+                    </td>
+                    <td>${subject.type}</td>
+                    <td>${subject.category === 'required' ? '필수' : subject.category === 'elective' ? '선택' : '실무'}</td>
+                    ${subject.competencies.map((level, index) => `
+                        <td class="competency-cell" onclick="editCompetency(${subject.id}, ${index})">
+                            <div class="competency-dot ${level === 1 ? 'active' : level === 2 ? 'partial active' : level === 3 ? 'strong active' : ''}"></div>
+                        </td>
+                    `).join('')}
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function editSubject(subjectId) {
+            const subject = subjects.find(s => s.id === subjectId);
+            if (!subject) return;
+
+            currentEditingSubject = subject;
+            document.getElementById('editSubjectName').value = subject.name;
+            document.getElementById('editSubjectCode').value = subject.code;
+            document.getElementById('editClassType').value = subject.type;
+            document.getElementById('editSubjectType').value = subject.category;
+            document.getElementById('editSubjectInfo').textContent = `${subject.code} - ${subject.name}`;
+            document.getElementById('editMemo').value = subject.memo || '';
+
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function editCompetency(subjectId, competencyIndex) {
+            const subject = subjects.find(s => s.id === subjectId);
+            if (!subject) return;
+
+            currentEditingSubject = subject;
+            currentEditingCompetency = competencyIndex;
+            
+            const competencyName = competencyNames[competencyIndex];
+            document.getElementById('editSubjectInfo').textContent = `${subject.name} - ${competencyName}`;
+            document.getElementById('editSubjectName').value = subject.name;
+            document.getElementById('editSubjectCode').value = subject.code;
+            document.getElementById('editClassType').value = subject.type;
+            document.getElementById('editSubjectType').value = subject.category;
+            document.getElementById('editMemo').value = subject.memo || '';
+
+            // 현재 역량 레벨 설정
+            const currentLevel = subject.competencies[competencyIndex];
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.classList.remove('active', 'partial', 'strong');
+                const level = btn.dataset.level;
+                if ((level === 'none' && currentLevel === 0) ||
+                    (level === 'basic' && currentLevel === 1) ||
+                    (level === 'partial' && currentLevel === 2) ||
+                    (level === 'strong' && currentLevel === 3)) {
+                    btn.classList.add('active');
+                    if (level === 'partial') btn.classList.add('partial');
+                    if (level === 'strong') btn.classList.add('strong');
+                }
+            });
+
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('show');
+            currentEditingSubject = null;
+            currentEditingCompetency = null;
+        }
+
+        function saveEdit() {
+            if (!currentEditingSubject) return;
+
+            // 기본 정보 업데이트
+            currentEditingSubject.name = document.getElementById('editSubjectName').value;
+            currentEditingSubject.code = document.getElementById('editSubjectCode').value;
+            currentEditingSubject.type = document.getElementById('editClassType').value;
+            currentEditingSubject.category = document.getElementById('editSubjectType').value;
+            currentEditingSubject.memo = document.getElementById('editMemo').value;
+
+            // 역량 레벨 업데이트 (특정 역량 편집 시)
+            if (currentEditingCompetency !== null) {
+                const activeBtn = document.querySelector('.level-btn.active');
+                if (activeBtn) {
+                    const level = activeBtn.dataset.level;
+                    const levelValue = level === 'none' ? 0 : 
+                                     level === 'basic' ? 1 : 
+                                     level === 'partial' ? 2 : 
+                                     level === 'strong' ? 3 : 0;
+                    currentEditingSubject.competencies[currentEditingCompetency] = levelValue;
+                }
+            }
+
+            renderMatrix();
+            updateStats();
+            closeModal();
+
+            // 변경된 행 하이라이트
+            setTimeout(() => {
+                const rows = document.querySelectorAll('#matrixBody tr');
+                const targetRow = Array.from(rows).find(row => 
+                    row.querySelector('.subject-name').textContent.includes(currentEditingSubject.name)
+                );
+                if (targetRow) {
+                    targetRow.classList.add('highlight');
+                    setTimeout(() => targetRow.classList.remove('highlight'), 2000);
+                }
+            }, 100);
+        }
+
+        function updateStats() {
+            const totalSubjects = filteredSubjects.length;
+            const totalMappings = filteredSubjects.reduce((sum, subject) => 
+                sum + subject.competencies.filter(c => c > 0).length, 0);
+            const avgMappings = totalSubjects > 0 ? (totalMappings / totalSubjects).toFixed(1) : 0;
+
+            document.getElementById('totalSubjects').textContent = totalSubjects;
+            document.getElementById('totalMappings').textContent = totalMappings;
+            document.getElementById('avgMappings').textContent = avgMappings;
+        }
+
+        function attachEventListeners() {
+            // 검색 기능
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                filteredSubjects = subjects.filter(subject => 
+                    subject.name.toLowerCase().includes(searchTerm) || 
+                    subject.code.toLowerCase().includes(searchTerm)
+                );
+                renderMatrix();
+                updateStats();
+            });
+
+            // 필터 기능
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.dataset.filter;
+                    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                    
+                    filteredSubjects = subjects.filter(subject => {
+                        const matchesSearch = subject.name.toLowerCase().includes(searchTerm) || 
+                                            subject.code.toLowerCase().includes(searchTerm);
+                        const matchesFilter = filter === 'all' || subject.category === filter;
+                        return matchesSearch && matchesFilter;
+                    });
+                    
+                    renderMatrix();
+                    updateStats();
+                });
+            });
+
+            // 역량 레벨 버튼
+            document.querySelectorAll('.level-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.level-btn').forEach(b => {
+                        b.classList.remove('active', 'partial', 'strong');
+                    });
+                    this.classList.add('active');
+                    
+                    const level = this.dataset.level;
+                    if (level === 'partial') this.classList.add('partial');
+                    if (level === 'strong') this.classList.add('strong');
+                });
+            });
+
+            // 모달 외부 클릭 시 닫기
+            document.getElementById('editModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+
+            // ESC 키로 모달 닫기
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('editModal').classList.contains('show')) {
+                    closeModal();
+                }
+            });
+        }
+
+
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showNotification('CSV 파일이 다운로드되었습니다!', 'success');
+        }
+
+        function importData() {
+            document.getElementById('fileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    if (file.name.endsWith('.json')) {
+                        const importedData = JSON.parse(e.target.result);
+                        if (Array.isArray(importedData) && importedData.length > 0) {
+                            // 데이터 검증
+                            const isValid = importedData.every(item => 
+                                item.id && item.name && item.code && item.competencies && 
+                                Array.isArray(item.competencies) && item.competencies.length === 18
+                            );
+                            
+                            if (isValid) {
+                                subjects.length = 0;
+                                subjects.push(...importedData);
+                                filteredSubjects = [...subjects];
+                                renderMatrix();
+                                updateStats();
+                                showNotification('데이터가 성공적으로 가져와졌습니다!', 'success');
+                            } else {
+                                showNotification('올바르지 않은 데이터 형식입니다.', 'error');
+                            }
+                        } else {
+                            showNotification('빈 데이터 파일입니다.', 'error');
+                        }
+                    } else if (file.name.endsWith('.csv')) {
+                        showNotification('CSV 파일 가져오기는 현재 지원하지 않습니다.', 'warning');
+                    }
+                } catch (error) {
+                    showNotification('파일을 읽는 중 오류가 발생했습니다.', 'error');
+                    console.error('Import error:', error);
+                }
+            };
+            
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                transition: all 0.3s ease;
+                transform: translateX(100%);
+            `;
+            
+            const colors = {
+                success: '#28a745',
+                error: '#dc3545',
+                warning: '#ffc107',
+                info: '#17a2b8'
+            };
+            
+            notification.style.backgroundColor = colors[type] || colors.info;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // 키보드 단축키
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+F로 검색 박스 포커스
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            
+            // Ctrl+S로 데이터 내보내기
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                exportJSON();
+            }
+        });
+
+        // 툴팁 기능
+        function showTooltip(element, text) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = text;
+            tooltip.style.cssText = `
+                position: absolute;
+                background: rgba(0,0,0,0.8);
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 12px;
+                z-index: 1000;
+                pointer-events: none;
+                white-space: nowrap;
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            const rect = element.getBoundingClientRect();
+            tooltip.style.left = rect.left + 'px';
+            tooltip.style.top = (rect.top - tooltip.offsetHeight - 5) + 'px';
+            
+            setTimeout(() => {
+                if (tooltip.parentNode) {
+                    tooltip.parentNode.removeChild(tooltip);
+                }
+            }, 2000);
+        }
+
+        // 추가 기능: 역량별 통계 보기
+        function showCompetencyStats() {
+            const stats = competencyNames.map((name, index) => {
+                const count = subjects.reduce((sum, subject) => 
+                    sum + (subject.competencies[index] > 0 ? 1 : 0), 0);
+                return { name, count, percentage: ((count / subjects.length) * 100).toFixed(1) };
+            });
+            
+            stats.sort((a, b) => b.count - a.count);
+            
+            const statsHtml = stats.map(stat => `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <span>${stat.name}</span>
+                    <span>${stat.count}개 (${stat.percentage}%)</span>
+                </div>
+            `).join('');
+            
+            const modal = document.createElement('div');
+            modal.className = 'edit-modal show';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>역량별 매핑 통계</h3>
+                    </div>
+                    <div class="modal-body">
+                        ${statsHtml}
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.edit-modal').remove()">닫기</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.remove();
+                }
+            });
+        }
+
+        // 우클릭 컨텍스트 메뉴
+        document.addEventListener('contextmenu', function(e) {
+            if (e.target.closest('.competency-cell')) {
+                e.preventDefault();
+                showCompetencyStats();
+            }
+        });
+
+        // 모바일 터치 지원
+        let touchStartTime = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartTime = Date.now();
+        });
+
+        document.addEventListener('touchend', function(e) {
+            const touchDuration = Date.now() - touchStartTime;
+            if (touchDuration > 500 && e.target.closest('.competency-cell')) {
+                // 긴 터치 시 역량 통계 보기
+                showCompetencyStats();
+            }
+        });
+
+        // 자동 저장 기능 (로컬 스토리지 대신 메모리에 저장)
+        let autoSaveData = null;
+        
+        function autoSave() {
+            autoSaveData = JSON.stringify(subjects);
+            console.log('데이터가 자동 저장되었습니다.');
+        }
+
+        // 데이터 변경 시 자동 저장
+        const originalSaveEdit = saveEdit;
+        saveEdit = function() {
+            originalSaveEdit();
+            autoSave();
+        };
+
+        // 페이지 로드 시 자동 저장된 데이터 확인
+        window.addEventListener('beforeunload', function() {
+            if (autoSaveData) {
+                console.log('저장된 데이터를 확인하세요.');
+            }
+        });
+
+    </script>
+</body>
+</html>
